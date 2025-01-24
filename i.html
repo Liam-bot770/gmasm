@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Platformer Game</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { background-color: #87CEEB; display: block; margin: 0 auto; }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 800;
+        canvas.height = 600;
+
+        // Player object
+        const player = {
+            x: 50,
+            y: canvas.height - 150,
+            width: 50,
+            height: 50,
+            speed: 5,
+            dx: 0,
+            dy: 0,
+            gravity: 0.8,
+            jumpPower: -12,
+            grounded: false
+        };
+
+        // Platform object
+        const platform = {
+            x: 0,
+            y: canvas.height - 100,
+            width: canvas.width,
+            height: 100
+        };
+
+        let keys = {};
+
+        // Event listeners for player movement
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+        });
+
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        function update() {
+            // Horizontal movement
+            if (keys['ArrowRight'] || keys['d']) {
+                player.dx = player.speed;
+            } else if (keys['ArrowLeft'] || keys['a']) {
+                player.dx = -player.speed;
+            } else {
+                player.dx = 0;
+            }
+
+            // Jumping (only if grounded)
+            if (keys['Space'] && player.grounded) {
+                player.dy = player.jumpPower;
+                player.grounded = false;
+            }
+
+            // Gravity effect
+            player.dy += player.gravity;
+
+            // Collision detection with ground (platform)
+            if (player.y + player.height > platform.y) {
+                player.y = platform.y - player.height;
+                player.dy = 0;
+                player.grounded = true;
+            }
+
+            // Apply movement
+            player.x += player.dx;
+            player.y += player.dy;
+
+            // Prevent player from going out of bounds
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+            if (player.y < 0) player.y = 0;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw the player
+            ctx.fillStyle = 'red';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+
+            // Draw the platform
+            ctx.fillStyle = 'green';
+            ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>
