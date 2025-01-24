@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Extended Platformer Game</title>
+    <title>Platformer with Camera Scroll</title>
     <style>
         body { margin: 0; overflow: hidden; }
         canvas { background-color: #87CEEB; display: block; margin: 0 auto; }
@@ -14,7 +14,7 @@
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = 1200;  // Larger map width
+        canvas.width = 800;  // Viewport size
         canvas.height = 600;
 
         // Player object
@@ -33,13 +33,20 @@
 
         // Platforms array
         const platforms = [
-            { x: 0, y: canvas.height - 100, width: canvas.width, height: 100 },
+            { x: 0, y: canvas.height - 100, width: 2000, height: 100 },  // Large ground platform
             { x: 300, y: 400, width: 200, height: 20 },
             { x: 600, y: 300, width: 200, height: 20 },
-            { x: 900, y: 200, width: 200, height: 20 }
+            { x: 900, y: 200, width: 200, height: 20 },
+            { x: 1200, y: 150, width: 200, height: 20 }
         ];
 
         let keys = {};
+        let camera = {
+            x: 0,
+            y: 0,
+            width: canvas.width,
+            height: canvas.height
+        };
 
         // Event listeners for player movement
         document.addEventListener('keydown', (e) => {
@@ -47,29 +54,3 @@
         });
 
         document.addEventListener('keyup', (e) => {
-            keys[e.key] = false;
-        });
-
-        function update() {
-            // Horizontal movement
-            if (keys['ArrowRight'] || keys['d']) {
-                player.dx = player.speed;
-            } else if (keys['ArrowLeft'] || keys['a']) {
-                player.dx = -player.speed;
-            } else {
-                player.dx = 0;
-            }
-
-            // Jumping (only if grounded)
-            if (keys['Space'] && player.grounded) {
-                player.dy = player.jumpPower;
-                player.grounded = false;
-            }
-
-            // Gravity effect
-            player.dy += player.gravity;
-
-            // Handle collision with platforms
-            player.grounded = false;
-            for (let platform of platforms) {
-                if (player.x + player.width > p
